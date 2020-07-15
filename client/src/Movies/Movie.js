@@ -1,11 +1,28 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { useParams } from "react-router-dom";
-import MovieCard from "./MovieCard";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { useParams, Route, useHistory } from 'react-router-dom';
+import MovieCard from './MovieCard';
 
-function Movie({ addToSavedList }) {
+import UpdateMovie from './UpdateMovie';
+
+function Movie({ addToSavedList, getMovieList }) {
+  const history = useHistory();
   const [movie, setMovie] = useState(null);
   const params = useParams();
+
+  const deleteMovie = (id) => {
+    axios
+      .delete(`http://localhost:5000/api/movies/${id}`)
+      .then((res) => {
+        getMovieList();
+        history.push('/');
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const delMovie = () => {
+    deleteMovie(movie.id);
+  };
 
   const fetchMovie = (id) => {
     axios
@@ -27,11 +44,26 @@ function Movie({ addToSavedList }) {
   }
 
   return (
-    <div className="save-wrapper">
-      <MovieCard movie={movie} />
+    <div>
+      <div className='save-wrapper'>
+        <MovieCard movie={movie} />
 
-      <div className="save-button" onClick={saveMovie}>
-        Save
+        <div className='save-button' onClick={saveMovie}>
+          Save
+        </div>
+        <button
+          className='md-button'
+          onClick={() => history.push(`/update-movie/${movie.id}`)}
+        >
+          Edit
+        </button>
+        <button
+          className='md-button'
+          onClick={delMovie}
+          // onClick={() => push(`/update-movie/${movie.id}`)}
+        >
+          Delete
+        </button>
       </div>
     </div>
   );
